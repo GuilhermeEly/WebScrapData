@@ -37,10 +37,14 @@ print(list(labels))
 
 item2 = soup.find("script", text=re.compile(r'\bdata:\s*\['))
 #print(item2)
-match2 = re.search(r'\bdata:\s*\[([^][]*)]', item2.string)
-#print(match2.group(1))
+match2 = re.findall(r'\bdata:\s*\[([^][]*)]', item2.string)
+print(match2[0])
+print("          ")
+print(match2[1])
 #print(match2.group(2))
 if match2:
-    labels2 = map(int, match2.group(1).split(','))
+    labels2all = map(int, match2[0].split(','))
+    labels2 = map(int, match2[1].split(','))
 
+print(list(labels2all))
 print(list(labels2))
