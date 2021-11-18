@@ -1,50 +1,37 @@
 from bs4 import BeautifulSoup
 import requests
-import ast  # abstract syntax tree to parse dictionary text
-import json
 import re
 
-url = 'https://apewisdom.io/cryptocurrencies/LRC/'
-soup = BeautifulSoup(requests.get(url).text, 'html.parser')
+def getRedditCryptoData(crypto):
+    url = 'https://apewisdom.io/cryptocurrencies/'+crypto+'/'
+    soup = BeautifulSoup(requests.get(url).text, 'html.parser')
 
-#700 -> 419
-#547 -> 268
-#153
+    #Get the data thar is how many people are talking about the crypto
+    itemData = soup.find("script", text=re.compile(r'\bdata:\s*\['))
 
-#label1 -> 582
-#data1  -> 584
+    matchData = re.findall(r'\bdata:\s*\[([^][]*)]', itemData.string)
 
-#label2 -> 640
-#data2  -> 642
+    if matchData:
+        dataAll = map(int, matchData[0].split(','))
+        dataCryptoCurrencySub = map(int, matchData[1].split(','))
 
-# line_number = 642
+    #Get the labels, which are the datetime
+    itemLabels = soup.find("script", text=re.compile(r'\blabels:\s*\['))
 
-# li = soup.prettify().split('\n')
-# print (str(li[line_number-1]))
+    matchLabels = re.findall(r'\blabels:\s*\[([^][]*)]', itemLabels.string)
 
-# labe1 = str(li[line_number-1]).split(',')
-# print(labe1)
+    if matchLabels:
+        labelsAll = map(int, matchLabels[0].split(','))
+        labelsCryptoCurrencySub = map(int, matchLabels[1].split(','))
 
-# Get the script node with text matching your pattern
-item = soup.find("script", text=re.compile(r'\blabels:\s*\['))
-#print(item)
-match = re.search(r'\blabels:\s*\[([^][]*)]', item.string)
-#print(match[1])
-if match:
-    labels = map(int, match.group(1).split(','))
 
-print(list(labels))
+    return dataAll, dataCryptoCurrencySub, labelsAll, labelsCryptoCurrencySub
 
-item2 = soup.find("script", text=re.compile(r'\bdata:\s*\['))
-#print(item2)
-match2 = re.findall(r'\bdata:\s*\[([^][]*)]', item2.string)
-print(match2[0])
-print("          ")
-print(match2[1])
-#print(match2.group(2))
-if match2:
-    labels2all = map(int, match2[0].split(','))
-    labels2 = map(int, match2[1].split(','))
+result = getRedditCryptoData('LRC')
 
-print(list(labels2all))
-print(list(labels2))
+print(list(result[0]))
+print(list(result[1]))
+print(list(result[2]))
+print(list(result[3]))
+
+
