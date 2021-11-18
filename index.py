@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+import datetime as dt
 
 def getRedditCryptoData(crypto):
     url = 'https://apewisdom.io/cryptocurrencies/'+crypto+'/'
@@ -29,9 +30,17 @@ def getRedditCryptoData(crypto):
 
 result = getRedditCryptoData('LRC')
 
-print(list(result[0]))
-print(list(result[1]))
-print(list(result[2]))
-print(list(result[3]))
+# print(list(result[0]))
+# print(list(result[1]))
+# print(list(result[2]))
+# print(list(result[3]))
 
+timestamp = list(result[3])
+#print(timestamp)
+test = []
 
+for ts in timestamp:
+    print(dt.datetime.utcfromtimestamp(ts/1000))
+    test.append(dt.datetime.utcfromtimestamp(ts/1000))
+
+print(test[20])
