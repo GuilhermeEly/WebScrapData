@@ -2,3 +2,4 @@
 start_venv.bat
 .vscode
 *.pyc
+sqlite
