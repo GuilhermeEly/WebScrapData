@@ -2,6 +2,15 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import datetime as dt
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def convertTimestamp(timestamp):
+    datetimeValues = []
+    for ts in timestamp:
+        datetimeValues.append(dt.datetime.utcfromtimestamp(ts/1000))
+
+    return datetimeValues
 
 def getRedditCryptoData(crypto):
     url = 'https://apewisdom.io/cryptocurrencies/'+crypto+'/'
@@ -25,22 +34,17 @@ def getRedditCryptoData(crypto):
         labelsAll = map(int, matchLabels[0].split(','))
         labelsCryptoCurrencySub = map(int, matchLabels[1].split(','))
 
+    labelsAll = convertTimestamp(labelsAll)
+    labelsCryptoCurrencySub = convertTimestamp(labelsCryptoCurrencySub)
 
     return dataAll, dataCryptoCurrencySub, labelsAll, labelsCryptoCurrencySub
 
-result = getRedditCryptoData('LRC')
+def main():
+    crypto = 'LRC'
+    dataAll, dataCryptoCurrencySub, labelsAll, labelsCryptoCurrencySub = getRedditCryptoData(crypto)
 
-# print(list(result[0]))
-# print(list(result[1]))
-# print(list(result[2]))
-# print(list(result[3]))
+    df = pd.DataFrame({'All': dataAll, 'CryptoCurrencySub': dataCryptoCurrencySub}, index=labelsAll)
+    df.plot()
+    plt.show()
 
-timestamp = list(result[3])
-#print(timestamp)
-test = []
-
-for ts in timestamp:
-    print(dt.datetime.utcfromtimestamp(ts/1000))
-    test.append(dt.datetime.utcfromtimestamp(ts/1000))
-
-print(test[20])
+main()
