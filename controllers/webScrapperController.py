@@ -11,7 +11,13 @@ class WebScrapperController:
     def convertTimestamp(self, timestamp):
         datetimeValues = []
         for ts in timestamp:
-            datetimeValues.append(dt.datetime.utcfromtimestamp(ts/1000))
+            tm = dt.datetime.utcfromtimestamp(ts/1000)
+            
+            tm = tm - dt.timedelta(minutes=tm.minute % 10,
+                             seconds=tm.second,
+                             microseconds=tm.microsecond)
+        
+            datetimeValues.append(tm)
 
         return datetimeValues
 
