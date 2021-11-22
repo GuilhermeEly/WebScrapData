@@ -5,14 +5,11 @@ import sqlite3
 import time
 
 def main():
-    while True:
-        scrapData = wsc.WebScrapperController()
-        crypto = 'LRC'
-        dataAll, dataCryptoCurrencySub, labelsAll, labelsCryptoCurrencySub = scrapData.getRedditCryptoData(crypto)
+    scrapData = wsc.WebScrapperController()
 
-        dftodb = pd.DataFrame(zip(labelsAll,dataAll), columns=['DATE','MENTIONS'])
-        dftodb['CRYPTO'] = crypto
-        dftodb = dftodb.iloc[-5:]
+    while True:
+        crypto = 'LRC'
+        dftodb = scrapData.getRedditCryptoData(crypto)
         print(dftodb)
 
         # df = pd.DataFrame({'MentionsAllSubs': dataAll, 'MentionsCryptoCurrSub': dataCryptoCurrencySub}, index=labelsAll)
@@ -24,8 +21,15 @@ def main():
         # plt.show()
 
         conn = sqlite3.connect(r"sqlite\scrap.db")
-        #to_sql always drops the table if it exists
-        dftodb.to_sql('ScrappedMentionsData', conn, if_exists='replace', index=False)
+
+        cur = conn.cursor()
+
+        query = """INSERT OR REPLACE INTO ScrappedMentionsData (DATE, CRYPTO, MENTIONS) 
+                VALUES ((?), (?), (?))"""
+
+        for i in range(len(dftodb)):
+            cur.execute(query, (str(dftodb.DATE[i]), str(dftodb.CRYPTO[i]), str(dftodb.MENTIONS[i]),))
+            conn.commit()
         time.sleep(180)
 
 main()

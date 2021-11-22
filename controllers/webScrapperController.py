@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import datetime as dt
+import pandas as pd
 
 class WebScrapperController:
 
@@ -46,7 +47,12 @@ class WebScrapperController:
         labelsAll = self.convertTimestamp(labelsAll)
         labelsCryptoCurrencySub = self.convertTimestamp(labelsCryptoCurrencySub)
 
-        return dataAll, dataCryptoCurrencySub, labelsAll, labelsCryptoCurrencySub
+        df = pd.DataFrame(zip(labelsAll,dataAll), columns=['DATE','MENTIONS'])
+        df['CRYPTO'] = crypto
+        df = df.iloc[-5:]
+        df = df.reset_index(drop=True)
+
+        return df
 
     def __del__(self):
         pass
